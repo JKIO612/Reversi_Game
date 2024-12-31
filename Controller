@@ -1,0 +1,118 @@
+import java.awt.EventQueue;
+import java.util.*;
+
+public class Controller {
+	private mGrid moGrid;
+	private static GUI vGrid;
+	private int moves;
+
+	public static void main(String[] args) 
+	{
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() {
+				try {
+					vGrid = new GUI();
+					vGrid.importImages();
+					vGrid.rescaleImages(114);
+					vGrid.initializeGrid();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public Controller(int size) {
+		moves = 0;
+		moGrid = new mGrid(size);
+		initializeGrid();
+	}
+
+	public int getTurn() {
+		return moves;
+	}
+
+	public void initializeGrid() {
+		moGrid.getGrid()[3][3].setPiece(1);
+		moGrid.getGrid()[3][4].setPiece(-1);
+		moGrid.getGrid()[4][3].setPiece(-1);
+		moGrid.getGrid()[4][4].setPiece(1);
+	}
+
+	public ArrayList<Location> validMoves(int piece) {
+		ArrayList<Location> pieces = moGrid.getPieces(piece);
+		ArrayList<Location> moves = new ArrayList<Location>();
+		Location endLoc;
+		Dir tempDir;
+
+		for(int r = 0; r < 8; r++)
+			for(int c = 0; c < 8; c++)
+				moGrid.getGrid()[r][c].clearDirs();
+		
+		for (Location loc : pieces)
+		{	
+			for (int rf = -1; rf <= 1; rf++)
+			{
+				for (int cf = -1; cf <= 1; cf++) 
+				{
+					tempDir = new Dir(rf, cf);
+
+					if (moGrid.checkLine(loc, tempDir)) 
+					{
+						endLoc = moGrid.getEndOfLine(loc, tempDir);
+						
+						Dir inverseDir = new Dir(rf * -1, cf * -1);
+						if(!endLoc.getDirs().contains(inverseDir))
+							endLoc.addDir(inverseDir);
+						moves.add(endLoc);
+					}
+				}
+			}
+		}
+		return moves;
+	}
+
+	public int getPTurn(int turnNum) {
+		int mod = turnNum % 2;
+		if (mod == 1)
+			return -1;
+		else
+			return 1;
+	}
+
+	public void makeMove(Location loca) {
+		Location loc = moGrid.getGrid()[loca.getRow()][loca.getCol()];
+		loc.setPiece(loca.getPiece());
+		processMove(loc);
+	}
+
+	public void reverseLine(Location loc, Dir d) 
+	{
+		Location tempLoc = null;
+		if (moGrid.isValid(new Location(loc.getRow() + d.getR(), loc.getCol() + d.getC())))
+			tempLoc = moGrid.getGrid()[loc.getRow() + d.getR()][loc.getCol() + d.getC()];
+
+		if (tempLoc.getPiece() == loc.getPiece() * -1) {
+			tempLoc.setPiece(loc.getPiece());
+			vGrid.getGrid()[tempLoc.getRow()][tempLoc.getCol()].setIcon(vGrid.getColor(loc));
+			reverseLine(tempLoc, d);
+		}
+
+	}
+
+	public void processMove(Location loc) {
+		vGrid.draw(getPTurn(moves), loc);
+		moves++;
+
+		List<Dir> dirs = loc.getDirs();
+		for (Dir d : dirs) {
+			reverseLine(loc, d);
+		}
+	}
+	
+	public int countPieces(int color)
+	{
+		return moGrid.getPieces(color).size();
+	}
+}

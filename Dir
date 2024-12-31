@@ -1,0 +1,22 @@
+public class Dir {
+	private int rFactor;
+	private int cFactor;
+
+	public Dir(int r, int c) {
+		rFactor = r;
+		cFactor = c;
+	}
+
+	public int getR() {
+		return rFactor;
+	}
+
+	public int getC() {
+		return cFactor;
+	}
+	
+	public boolean equals(Object o) {
+		Dir tmp = (Dir) o;
+		return (rFactor == tmp.getR() && cFactor == tmp.getC());
+	}
+}

@@ -1,0 +1,64 @@
+import java.util.*;
+
+public class Location {
+	private int row;
+	private int col;
+	private int piece;
+	private List<Dir> validDirs;
+
+	public Location(int p, int r, int c) {
+		row = r;
+		col = c;
+		piece = p;
+		validDirs = new ArrayList<Dir>();
+	}
+
+	public Location(int r, int c) {
+		row = r;
+		col = c;
+		piece = 0;
+		validDirs = new ArrayList<Dir>();
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public int getCol() {
+		return col;
+	}
+
+	public int getPiece() {
+		return piece;
+	}
+
+	public void setRow(int currentRow) {
+		row = currentRow;
+	}
+
+	public void setCol(int currentCol) {
+		col = currentCol;
+	}
+
+	public void setPiece(int color) // color must be 1 or -1
+	{
+		piece = color;
+	}
+
+	public void addDir(Dir d) {
+		validDirs.add(d);
+	}
+
+	public List<Dir> getDirs() {
+		return validDirs;
+	}
+
+	public void clearDirs() {
+		validDirs.clear();
+	}
+
+	public boolean equals(Object o) {
+		Location tmp = (Location) o;
+		return (row == tmp.getRow() && col == tmp.getCol());
+	}
+}

@@ -1,0 +1,565 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+
+import javax.imageio.*;
+import javax.swing.*;
+
+public class GUI extends JFrame 
+{
+	public JButton[][] grid;
+	private JFrame frame;
+	private ClassLoader cl;
+	private Controller Reversi;
+	
+	private JButton newGame; 
+	private JButton newEndGame;
+	
+	private JPanel topPanel;
+	private JPanel gridPanel;
+	private JPanel southPanel;
+	
+	private ImageIcon black;
+	private ImageIcon white;
+	
+	private JLabel southText1;
+	private JLabel southText2;
+	private JLabel southText3;
+	
+	private cAction uListen;
+	private yesNewAction yesListen;
+	private noNewAction noListen;
+	private stuAction stuListen;
+	private ruAction ruListen;
+	private cruAction cruListen;
+	private buAction buListen;
+	private conAction conListen;
+	private endNewAction endNewListen;
+
+	private JFrame menuFrame;
+	private JPanel menuPanel;
+	private JPanel titlePanel;
+	private JButton start;
+	private JButton rules;
+	private JButton credits;
+	private JButton back;
+	
+	private JLabel rulesT1;
+	private JLabel rulesT2;
+	
+	private JLabel crediT1;
+	private JLabel crediT2;
+	private JLabel crediT3;
+	private JLabel crediT4;
+	
+	private JLabel confirmT;
+	private JLabel title;
+	
+	private JFrame popFrame;
+	private JPanel backPanel;
+	private JPanel popText;
+
+	private JFrame confirmFrame;
+	private JPanel newConfirmation;
+	private JPanel decision;
+	private JButton yes;
+	private JButton no;
+	
+	private JFrame endFrame;
+	private JPanel endNewPanel;
+	private JPanel endTextPanel;
+	private JPanel endWinPanel;
+	private JLabel winner;
+	private JLabel blackScore;
+	private JLabel whiteScore;
+	
+
+	public GUI() 
+	{
+		frame = new JFrame();
+		grid = new JButton[8][8];
+		Reversi = new Controller(8);
+		
+		initialize();
+		
+		frame.setVisible(true);
+		frame.add(gridPanel, BorderLayout.CENTER);
+		frame.add(topPanel, BorderLayout.NORTH);
+		frame.add(southPanel, BorderLayout.SOUTH);
+		frame.setResizable(false);	
+		
+		menuFrame.setVisible(true);
+		menuFrame.add(titlePanel, BorderLayout.CENTER);
+		menuFrame.add(menuPanel, BorderLayout.SOUTH);
+		menuFrame.setResizable(false);	
+		menuFrame.setResizable(false);	
+		
+		popFrame.setVisible(false);
+		popFrame.add(backPanel, BorderLayout.NORTH);
+		popFrame.add(popText, BorderLayout.CENTER);
+		popFrame.setResizable(false);	
+
+		confirmFrame.setVisible(false);
+		confirmFrame.add(newConfirmation, BorderLayout.CENTER);
+		confirmFrame.add(decision, BorderLayout.SOUTH);
+		confirmFrame.setResizable(false);	
+		
+	}
+	
+	public void initialize() 
+	{
+		uListen = new cAction();
+		yesListen = new yesNewAction();
+		noListen = new noNewAction();
+		stuListen = new stuAction();
+		ruListen = new ruAction();
+		cruListen = new cruAction();
+		buListen = new buAction();
+		conListen = new conAction();
+		
+		southText1 = new JLabel("Moves: "+0+"                 ");
+		southText2 = new JLabel("White: "+0+"         "+"Black: "+0+"                 ");
+		southText3 = new JLabel("White's Turn");
+		
+		southText1.setFont(new Font("Courier", Font.PLAIN, 14));
+		southText2.setFont(new Font("Courier", Font.PLAIN, 14));
+		southText3.setFont(new Font("Courier", Font.BOLD, 14));
+		
+		rulesT1 = new JLabel("Rules: sandwich opposite colored pieces to reverse their color.");			
+		rulesT2 = new JLabel("When there are no more moves available, the player with the most pieces of their color wins.");
+		
+		rulesT1.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		rulesT2.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		
+		crediT1 = new JLabel("Creators: Philip Chen(10) + Jeffrey Yue(10)");
+		crediT2 = new JLabel("We would like to recognize one of our sponsors: Mrs. Neuhaus.");
+		crediT3 = new JLabel("Without her contributions, this project would not be possible.");
+		crediT4 = new JLabel("2018 AP Computer Science, Data Structures");
+		
+		crediT1.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		crediT2.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		crediT3.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		crediT4.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+				
+		confirmT = new JLabel("Are you sure you want to restart?");
+		confirmT.setFont(new Font("Courier", Font.ITALIC, 14));
+		
+		title = new JLabel("REVERSI");
+		title.setFont(new Font("Courier", Font.BOLD, 80));
+		
+		menuFrame = new JFrame();
+		menuFrame.setBounds(665, 335, 600, 400);
+		menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		menuFrame.getContentPane().setLayout(new BorderLayout());
+		
+		
+		
+		frame = new JFrame();
+		frame.setBounds(500, 10, 930, 1024);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(new BorderLayout());
+		
+		popFrame = new JFrame();
+		popFrame.setBounds(665, 335, 600, 400);
+		popFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		popFrame.getContentPane().setLayout(new BorderLayout());
+		
+		confirmFrame = new JFrame();
+		confirmFrame.setBounds(815, 490, 300, 100);
+		confirmFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		confirmFrame.getContentPane().setLayout(new BorderLayout());
+		
+		newGame = new JButton("New Game");
+		newGame.setFont(new Font("Courier", Font.ITALIC, 14));
+		
+		
+		
+		newConfirmation = new JPanel();
+		newConfirmation.add(confirmT);
+		
+		yes = new JButton("Yes");
+		yes.addActionListener(yesListen);
+		no = new JButton("No");
+		no.addActionListener(noListen);
+		
+		start = new JButton("Start Game");
+		start.setFont(new Font("Courier", Font.BOLD, 14));
+		start.addActionListener(stuListen);
+		
+		rules = new JButton("Rules");
+		rules.setFont(new Font("Courier", Font.ITALIC, 14));
+		rules.addActionListener(ruListen);
+		
+		credits = new JButton("Credits");
+		credits.setFont(new Font("Courier", Font.ITALIC, 14));
+		credits.addActionListener(cruListen);
+		
+		back = new JButton("Back");
+		back.setFont(new Font("Courier", Font.ITALIC, 14));
+		back.addActionListener(buListen);
+		
+
+		
+		decision = new JPanel();
+		decision.add(no);
+		decision.add(yes);
+		
+		menuPanel = new JPanel();
+		menuPanel.add(start);
+		menuPanel.add(rules);
+		menuPanel.add(credits);
+		
+		titlePanel = new JPanel();
+		titlePanel.add(title);
+		
+		topPanel = new JPanel();
+		topPanel.add(newGame);
+		
+		gridPanel = new JPanel(new GridLayout(8, 8));
+		
+		southPanel = new JPanel();
+		southPanel.add(southText1);
+		southPanel.add(southText2);
+		southPanel.add(southText3);
+				
+		backPanel = new JPanel();
+		backPanel.add(back);
+	
+		popText = new JPanel();
+		
+		Color col = new Color(0, 77, 39);
+
+		for (int r = 0; r < 8; r++) 
+		{
+			for (int c = 0; c < 8; c++) 
+			{
+				grid[r][c] = new JButton();
+				grid[r][c].setBackground(col);
+				grid[r][c].setBorder(BorderFactory.createLineBorder(Color.black));
+				grid[r][c].setOpaque(true);
+				gridPanel.add(grid[r][c]);
+			}
+		}
+	}
+
+	public JButton[][] getGrid()
+	{
+		return grid;
+	}
+
+	public Icon getColor(Location loc) 
+	{
+		return grid[loc.getRow()][loc.getCol()].getIcon();
+	}
+
+	public void changeLabel() 
+	{
+		if(Reversi.getPTurn(Reversi.getTurn()) == -1)
+			southText3.setText("Black's Turn");
+		else 
+			southText3.setText("White's Turn");
+		
+		southText1.setText("Moves: "+Reversi.getTurn()+"                 ");
+
+		int white = Reversi.countPieces(1);
+		int black = Reversi.countPieces(-1);
+		
+		southText2.setText("White: " + white + "         " + "Black: " + black + "                 ");
+	}
+
+	public void importImages() 
+	{
+		cl = this.getClass().getClassLoader();
+		URL blackPieceURL = cl.getResource("BlackPiece.png");
+		black = new ImageIcon(blackPieceURL);
+		URL whitePieceURL = cl.getResource("WhitePiece.png");
+		white = new ImageIcon(whitePieceURL);
+	}
+	
+	public void rescaleImages(int side) 
+	{
+		Image img = white.getImage();
+		Image newimg = img.getScaledInstance(side, side, java.awt.Image.SCALE_SMOOTH);
+		white = new ImageIcon(newimg);
+		
+		Image img1 = black.getImage();
+		Image newimg1 = img1.getScaledInstance(side, side, java.awt.Image.SCALE_SMOOTH);
+		black = new ImageIcon(newimg1);
+	}
+
+	public void initializeGrid() 
+	{
+		grid[3][3].setIcon(white);
+		grid[3][4].setIcon(black);
+		grid[4][3].setIcon(black);
+		grid[4][4].setIcon(white);
+
+		repaint();
+	}
+
+	public void draw(int p, Location loc) 
+	{
+		if (p == 1) 
+			grid[loc.getRow()][loc.getCol()].setIcon(white);
+		else if(p == -1)
+			grid[loc.getRow()][loc.getCol()].setIcon(black);
+		
+		repaint();
+	}
+
+	public void processGrid(int piece) 
+	{
+		ArrayList<Location> validLocs = Reversi.validMoves(piece);
+		if (validLocs.size() == 0)
+		{
+			if(Reversi.validMoves(piece*-1).size() == 0)
+			{
+				System.out.println("END");
+				endGame();
+			}
+			else
+			{
+				processGrid(piece*-1);
+				return;
+			}
+		}
+		
+		for (int row = 0; row < 8; row++)
+		{
+			for (int col = 0; col < 8; col++) 
+			{
+				grid[row][col].removeActionListener(uListen);
+			}
+		}
+		
+		for (int r = 0; r < 8; r++)
+		{
+			for (int c = 0; c < 8; c++) 
+			{
+				Location loc = new Location(r, c);
+				if (validLocs.contains(loc))
+					grid[loc.getRow()][loc.getCol()].addActionListener(uListen);
+			}
+		}
+	}
+	
+	public void endGame() 
+	{
+		endFrame = new JFrame();
+		endFrame.setBounds(665, 335, 600, 400);
+		endFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		endFrame.getContentPane().setLayout(new BorderLayout());
+		
+		endNewListen = new endNewAction();
+		
+		newEndGame = new JButton("New Game");
+		newEndGame.setFont(new Font("Courier", Font.ITALIC, 14));
+		newEndGame.addActionListener(endNewListen);
+		
+		endNewPanel = new JPanel();
+		endNewPanel.add(newEndGame);
+		
+		endWinPanel = new JPanel();
+		
+		endTextPanel = new JPanel();
+		
+		winner = new JLabel();
+		blackScore = new JLabel();
+		whiteScore = new JLabel();
+		
+		int whites = Reversi.countPieces(1);
+		int blacks = Reversi.countPieces(-1);
+		
+		whiteScore.setText("White: "+whites+"                      ");
+		blackScore.setText("Black: "+blacks);
+		
+		whiteScore.setFont(new Font("Courier", Font.PLAIN, 20));
+		blackScore.setFont(new Font("Courier", Font.PLAIN, 20));
+		
+		endTextPanel.add(whiteScore, BorderLayout.WEST);
+		endTextPanel.add(blackScore, BorderLayout.EAST);
+		
+	
+		
+		if(whites > blacks)
+			winner.setText("THE WINNER IS WHITE!");
+		else if(whites < blacks)
+			winner.setText("THE WINNER IS BLACK!");
+		else
+			winner.setText("IT IS A DRAW!");
+		
+		winner.setFont(new Font("Courier", Font.BOLD, 40));
+		
+		
+		endWinPanel.add(winner);
+		
+		endFrame.add(newEndGame, BorderLayout.SOUTH);
+		endFrame.add(endWinPanel, BorderLayout.NORTH);
+		endFrame.add(endTextPanel, BorderLayout.CENTER);
+		
+		newGame.removeActionListener(conListen);
+		endFrame.setVisible(true);
+	}
+	
+
+	private class cAction implements ActionListener
+	{
+		public void actionPerformed(ActionEvent event) 
+		{
+			for (int r = 0; r < 8; r++) 
+			{
+				for (int c = 0; c < 8; c++) 
+				{
+					int turn = Reversi.getTurn();
+					int pie = Reversi.getPTurn(turn);
+					Location tempLoc = new Location(pie, r, c);
+					
+					if (event.getSource() == grid[r][c]) 
+					{
+						System.out.println("Button at row:" + r + " column: " + c);
+						Reversi.makeMove(tempLoc);
+						processGrid(Reversi.getPTurn(Reversi.getTurn()));
+						changeLabel();
+					}
+				}
+			}
+		}
+	}
+	
+	private class yesNewAction implements ActionListener
+	{
+		public void actionPerformed(ActionEvent event) 
+		{
+			frame.setVisible(false);
+			confirmFrame.setVisible(false);
+			
+			frame = new JFrame();
+			grid = new JButton[8][8];
+			Reversi = new Controller(8);
+			initialize();
+			
+			confirmFrame.setVisible(false);
+			confirmFrame.add(newConfirmation, BorderLayout.CENTER);
+			confirmFrame.add(decision, BorderLayout.SOUTH);
+			
+			frame.setVisible(true);
+			newGame.addActionListener(conListen);
+			
+			frame.add(gridPanel, BorderLayout.CENTER);
+			frame.add(topPanel, BorderLayout.NORTH);
+			frame.add(southPanel, BorderLayout.SOUTH);
+			frame.setResizable(false);
+			
+			importImages();
+			rescaleImages(114);
+			initializeGrid();
+			processGrid(1);
+		}
+	}
+	
+	private class noNewAction implements ActionListener 
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+
+			confirmFrame.setVisible(false);
+			newGame.addActionListener(conListen);
+		}
+	}
+	
+	private class stuAction implements ActionListener 
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			processGrid(1);
+			newGame.addActionListener(conListen);
+			menuFrame.setVisible(false);
+		}
+	}
+	
+	
+	private class ruAction implements ActionListener 
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			popText.add(rulesT1);
+			popText.add(rulesT2);
+			
+			popFrame.setVisible(true);
+		}
+	}
+	
+	private class cruAction implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			popText.add(crediT1);
+			popText.add(crediT2);
+			popText.add(crediT3);
+			popText.add(crediT4);
+			
+			popFrame.setVisible(true);
+		}
+	}
+	
+	private class buAction implements ActionListener 
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			popText.removeAll();
+			
+			popFrame.setVisible(false);
+		}
+	}
+	
+	private class conAction implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			newGame.removeActionListener(conListen);
+			endFrame.setVisible(false);
+			endTextPanel.removeAll();
+			endWinPanel.removeAll();
+			
+			confirmFrame.setVisible(true);
+		}
+	}
+	
+	private class endNewAction implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			newGame.removeActionListener(conListen);
+			endFrame.setVisible(false);
+			endTextPanel.removeAll();
+			endWinPanel.removeAll();
+			
+			frame.setVisible(false);
+
+			frame = new JFrame();
+			grid = new JButton[8][8];
+			Reversi = new Controller(8);
+			initialize();
+			
+			confirmFrame.setVisible(false);
+			confirmFrame.add(newConfirmation, BorderLayout.CENTER);
+			confirmFrame.add(decision, BorderLayout.SOUTH);
+			
+			frame.setVisible(true);
+			newGame.addActionListener(conListen);
+			
+			frame.add(gridPanel, BorderLayout.CENTER);
+			frame.add(topPanel, BorderLayout.NORTH);
+			frame.add(southPanel, BorderLayout.SOUTH);
+			frame.setResizable(false);
+			
+			importImages();
+			rescaleImages(114);
+			initializeGrid();
+			processGrid(1);
+		}
+	}
+}

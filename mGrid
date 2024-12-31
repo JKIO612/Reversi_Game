@@ -1,0 +1,87 @@
+import java.util.*;
+
+public class mGrid // m stands for model
+{
+	public Location[][] Grid;
+	private int size;
+
+as	public mGrid(int dimensions) // constructor
+	{
+		size = dimensions;
+		Grid = new Location[size][size];
+
+		for (int r = 0; r < size; r++)
+			for (int c = 0; c < size; c++)
+				Grid[r][c] = new Location(0, r, c);
+	}
+
+	public int getSize() // return size dimensions
+	{
+		return size;
+	}
+
+	public Location[][] getGrid() {
+		return Grid;
+	}
+
+	public ArrayList<Location> getPieces(int piece) // returns list of locations
+													// of all pieces in Grid
+	{
+		ArrayList<Location> pieces = new ArrayList<Location>();
+
+		for (int r = 0; r < size; r++)
+			for (int c = 0; c < size; c++)
+				if (Grid[r][c].getPiece() == piece)
+					pieces.add(Grid[r][c]);
+		return pieces;
+	}
+
+	public boolean isValid(Location loc) // checks if loc is in Grid
+	{
+		return (!(loc.getRow() >= size || loc.getRow() < 0 || loc.getCol() >= size || loc.getCol() < 0));
+	}
+
+	public Location getEndOfLine(Location loc, Dir d) {
+		Location tempLoc;
+
+		if (isValid(Grid[loc.getRow() + d.getR()][loc.getCol() + d.getC()]))
+			tempLoc = Grid[loc.getRow() + d.getR()][loc.getCol() + d.getC()];
+		else
+			return null;
+
+		if (tempLoc.getPiece() == 0)
+			return tempLoc;
+		else
+			return getEndOfLine(tempLoc, d);
+	}
+
+	public boolean checkLine(Location loc, Dir d) {
+		Location tempLoc = new Location(0, loc.getRow() + d.getR(), loc.getCol() + d.getC());
+
+		if (isValid(tempLoc))
+			tempLoc.setPiece(Grid[loc.getRow() + d.getR()][loc.getCol() + d.getC()].getPiece());
+		else
+			return false;
+
+		if (tempLoc.getPiece() == loc.getPiece() * -1)
+			return checkLineHelper(tempLoc, d);
+		else
+			return false;
+	}
+
+	public boolean checkLineHelper(Location loc, Dir d) {
+		Location tempLoc = new Location(0, loc.getRow() + d.getR(), loc.getCol() + d.getC());
+
+		if (isValid(tempLoc))
+			tempLoc.setPiece(Grid[loc.getRow() + d.getR()][loc.getCol() + d.getC()].getPiece());
+		else
+			return false;
+
+		if (tempLoc.getPiece() == loc.getPiece())
+			return checkLineHelper(tempLoc, d);
+		else if (tempLoc.getPiece() != 0)
+			return false;
+		return true;
+	}
+
+}
